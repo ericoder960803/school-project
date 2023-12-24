@@ -1,0 +1,20 @@
+loop(1, () => {
+ 
+     if(i < words.length) {
+       let pos=vec2(width()/4+i*textSize, height()*0.4)
+       const word = add_the_text(words[i],pos );
+	   
+ 
+       word.alpha=0;
+	   
+       //wait(30, () => {
+        //word.alpha = 1; 
+      //}).then(()=>go("battle"));
+       
+
+      i++;
+    } 
+	add_the_text("按方向鍵上以skip",vec2(width()/2,height()/2))
+	onKeyPress("up",()=>{
+		go("battle")
+	})})

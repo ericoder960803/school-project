@@ -1,0 +1,107 @@
+import { WorkspaceDragger } from "blockly";
+import kaboom from "kaboom"
+
+const k = kaboom()
+setBackground(141, 183, 255)
+const chineseFont = k.loadFont("chineseFont","fonts/Cubic_11_1.010_R.ttf");
+k.loadSprite("bean", "sprites/bean.png")
+
+function addButton(txt, p, f) {
+    const btn = add([
+        rect(240, 80, { radius: 8 }),
+        pos(p),
+        area(),
+        scale(1),
+        anchor("center"),
+        outline(4),
+    ])
+
+    btn.add([
+        text(txt,{ font: chineseFont, size: 30 ,width:width(),align: "center", wordwrap: false}),
+        anchor("center"),
+        color(0, 0, 0),
+    ])
+
+    btn.onHoverUpdate(() => {
+        const t = time() * 10
+        btn.color = hsl2rgb((t / 10) % 1, 0.6, 0.7)
+        btn.scale = vec2(1.2)
+        setCursor("pointer")
+    })
+
+    btn.onHoverEnd(() => {
+        btn.scale = vec2(1)
+        btn.color = rgb()
+    })
+
+    btn.onClick(f)
+
+    return btn
+}
+
+let textSize =30
+function add_the_text(txt, p ){
+    let position=p
+    const textObject=add([
+        text(txt,{ font: chineseFont, size: textSize ,width:width(),align: "center", wordwrap: false}),
+        anchor("center"),
+        
+        color(255, 255, 255),
+        pos(position),
+    ])
+    position.x += textObject.width + 10;
+
+  // 判断是否需要换行
+  //if(position.x + textObject.width > width()) {
+    //position.x = 0;
+    //position.y += textSize + 10;
+    
+  //}
+
+    return textObject
+}
+
+scene("intro-animation", () => {
+    setBackground(0, 0, 0)
+    // 在這裡定義 "start" 場景的內容
+   //逐字出現 
+   const text = "2050年，垃圾被製造太多，需要消滅";
+   const words = text.split("");
+ 
+   let i = 0;
+ 
+   loop(1, () => {
+ 
+     if(i < words.length) {
+       let pos=vec2(width()/4+i*textSize, height()*0.4)
+       const word = add_the_text(words[i],pos );
+ 
+       word.alpha=0;
+       wait(30, () => {
+        word.alpha = 1; 
+      }).then(()=>go("nextScene"));
+       
+
+      i++;
+    } })
+    //go("nextScene")
+    
+    debug.log("Start Scene");
+});
+
+scene("gamestart", () => {
+    addButton("開始", vec2(width() / 2, height() * 0.4), () => go("intro-animation"))
+    addButton("Quit", vec2(width() / 2, height() * 0.6), () => debug.log("bye"))
+});
+
+scene("nextScene", () => {
+    addButton("Back to Start", vec2(0.5, 0.5), () => {
+        debug.log("Switching back to Start Scene");
+        go("start");
+    });
+});
+
+// 啟動 "gamestart" 屏幕
+k.go("gamestart");
+
+k.onClick(() => k.addKaboom(k.mousePos()))
